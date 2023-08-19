@@ -1,0 +1,366 @@
+{
+    "blueprint": {
+        "icons": [
+            {
+                "signal": {
+                    "type": "item",
+                    "name": "decider-combinator"
+                },
+                "index": 1
+            },
+            {
+                "signal": {
+                    "type": "item",
+                    "name": "arithmetic-combinator"
+                },
+                "index": 2
+            }
+        ],
+        "entities": [
+            {
+                "entity_number": 1,
+                "name": "arithmetic-combinator",
+                "position": {
+                    "x": -156.5,
+                    "y": 400
+                },
+                "control_behavior": {
+                    "arithmetic_conditions": {
+                        "first_signal": {
+                            "type": "virtual",
+                            "name": "signal-each"
+                        },
+                        "second_signal": {
+                            "type": "virtual",
+                            "name": "signal-F"
+                        },
+                        "operation": "*",
+                        "output_signal": {
+                            "type": "virtual",
+                            "name": "signal-A"
+                        }
+                    }
+                }
+            },
+            {
+                "entity_number": 2,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -152.5,
+                    "y": 400
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "wooden-chest"
+                        },
+                        "constant": 1,
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "item",
+                            "name": "storage-tank"
+                        },
+                        "copy_count_from_input": false
+                    }
+                }
+            },
+            {
+                "entity_number": 3,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -151.5,
+                    "y": 400
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "iron-chest"
+                        },
+                        "second_signal": {
+                            "type": "virtual",
+                            "name": "signal-Z"
+                        },
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "item",
+                            "name": "storage-tank"
+                        },
+                        "copy_count_from_input": false
+                    }
+                }
+            },
+            {
+                "entity_number": 4,
+                "name": "arithmetic-combinator",
+                "position": {
+                    "x": -156.5,
+                    "y": 402
+                },
+                "control_behavior": {
+                    "arithmetic_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "repair-pack"
+                        },
+                        "second_constant": 1,
+                        "operation": "*",
+                        "output_signal": {
+                            "type": "virtual",
+                            "name": "signal-6"
+                        }
+                    }
+                }
+            },
+            {
+                "entity_number": 5,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -152.5,
+                    "y": 402
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "wooden-chest"
+                        },
+                        "constant": 1,
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "item",
+                            "name": "storage-tank"
+                        },
+                        "copy_count_from_input": true
+                    }
+                }
+            },
+            {
+                "entity_number": 6,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -151.5,
+                    "y": 402
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "wooden-chest"
+                        },
+                        "second_signal": {
+                            "type": "virtual",
+                            "name": "signal-N"
+                        },
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "item",
+                            "name": "storage-tank"
+                        },
+                        "copy_count_from_input": true
+                    }
+                }
+            },
+            {
+                "entity_number": 7,
+                "name": "constant-combinator",
+                "position": {
+                    "x": -147.5,
+                    "y": 401.5
+                },
+                "control_behavior": {
+                    "filters": [
+                        {
+                            "signal": {
+                                "type": "item",
+                                "name": "wooden-chest"
+                            },
+                            "count": 1,
+                            "index": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "entity_number": 8,
+                "name": "constant-combinator",
+                "position": {
+                    "x": -147.5,
+                    "y": 400.5
+                },
+                "control_behavior": {
+                    "filters": [
+                        {
+                            "signal": {
+                                "type": "virtual",
+                                "name": "signal-0"
+                            },
+                            "count": 1,
+                            "index": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "entity_number": 9,
+                "name": "arithmetic-combinator",
+                "position": {
+                    "x": -156.5,
+                    "y": 404
+                },
+                "control_behavior": {
+                    "arithmetic_conditions": {
+                        "first_signal": {
+                            "type": "virtual",
+                            "name": "signal-each"
+                        },
+                        "second_signal": {
+                            "type": "item",
+                            "name": "steel-chest"
+                        },
+                        "operation": "*",
+                        "output_signal": {
+                            "type": "virtual",
+                            "name": "signal-3"
+                        }
+                    }
+                }
+            },
+            {
+                "entity_number": 10,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -152.5,
+                    "y": 404
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "item",
+                            "name": "wooden-chest"
+                        },
+                        "second_signal": {
+                            "type": "item",
+                            "name": "shotgun"
+                        },
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "item",
+                            "name": "storage-tank"
+                        },
+                        "copy_count_from_input": false
+                    }
+                }
+            },
+            {
+                "entity_number": 11,
+                "name": "constant-combinator",
+                "position": {
+                    "x": -147.5,
+                    "y": 403.5
+                },
+                "control_behavior": {
+                    "filters": [
+                        {
+                            "signal": {
+                                "type": "item",
+                                "name": "wooden-chest"
+                            },
+                            "count": 1,
+                            "index": 1
+                        }
+                    ],
+                    "is_on": false
+                }
+            },
+            {
+                "entity_number": 12,
+                "name": "constant-combinator",
+                "position": {
+                    "x": -147.5,
+                    "y": 402.5
+                },
+                "control_behavior": {
+                    "filters": [
+                        {
+                            "signal": {
+                                "type": "virtual",
+                                "name": "signal-0"
+                            },
+                            "count": 1,
+                            "index": 1
+                        }
+                    ],
+                    "is_on": false
+                }
+            },
+            {
+                "entity_number": 13,
+                "name": "arithmetic-combinator",
+                "position": {
+                    "x": -156.5,
+                    "y": 406
+                },
+                "control_behavior": {
+                    "arithmetic_conditions": {
+                        "second_constant": 0,
+                        "operation": "*"
+                    }
+                }
+            },
+            {
+                "entity_number": 14,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -152.5,
+                    "y": 406
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "virtual",
+                            "name": "signal-everything"
+                        },
+                        "second_signal": {
+                            "type": "virtual",
+                            "name": "signal-P"
+                        },
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "virtual",
+                            "name": "signal-3"
+                        },
+                        "copy_count_from_input": false
+                    }
+                }
+            },
+            {
+                "entity_number": 15,
+                "name": "decider-combinator",
+                "position": {
+                    "x": -151.5,
+                    "y": 406
+                },
+                "control_behavior": {
+                    "decider_conditions": {
+                        "first_signal": {
+                            "type": "virtual",
+                            "name": "signal-everything"
+                        },
+                        "constant": 1,
+                        "comparator": "<",
+                        "output_signal": {
+                            "type": "virtual",
+                            "name": "signal-G"
+                        },
+                        "copy_count_from_input": true
+                    }
+                }
+            }
+        ],
+        "item": "blueprint",
+        "label": "Кекер-кокер",
+        "version": 281479277379584
+    }
+}
