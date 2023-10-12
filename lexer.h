@@ -11,7 +11,7 @@
 
 class Lexer {
 public:
-    enum class Token {
+    enum Token {
         boolean = 1,
         null = 2,
         unsigned_number = 4,

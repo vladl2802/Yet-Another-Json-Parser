@@ -4,8 +4,8 @@
 
 #include "json_parser.h"
 
-JsonParser::ParserUnit::Vertex*
-JsonParser::ParserUnit::create_vertex(JsonParser::StructureToken type, std::unique_ptr<BasicParserCallback> callback) {
+detail::Vertex*
+ParserUnit::create_vertex(StructureToken type, std::unique_ptr<BasicParserCallback> callback) {
     if (callback != nullptr) assert(type == StructureToken::callback); // TODO: replace with exception
     switch (type) {
         case StructureToken::array:
@@ -15,21 +15,21 @@ JsonParser::ParserUnit::create_vertex(JsonParser::StructureToken type, std::uniq
         case StructureToken::callback:
             return new CallbackVertex(type, nullptr, std::move(callback));
         case StructureToken::unknown:
-            return new Vertex(type, nullptr);
+            return new detail::Vertex(type, nullptr);
         default:
             assert(false); // TODO: replace with exception
     }
 }
 
-void JsonParser::ParserUnit::add_callback_listener(std::unique_ptr<BasicParserCallback> callback, std::initializer_list<ParserVariablePath> path) {
+void ParserUnit::add_callback_listener(std::unique_ptr<BasicParserCallback> callback, std::initializer_list<ParserVariablePath> path) {
     static_assert(!std::is_abstract_v<decltype(*callback)>); // callback must be final
-    Vertex** cur = &vertex_stack[0];
+    detail::Vertex** cur = &vertex_stack[0];
     for (const auto& path_element : path) {
         assert(cur != nullptr); // TODO: replace with exception
         StructureToken type;
         if (std::holds_alternative<uint32_t>(path_element)) type = StructureToken::array;
         else if (std::holds_alternative<std::string>(path_element) || std::holds_alternative<const char*>(path_element)) type = StructureToken::object;
-        else if (std::holds_alternative<StructureParsingFlag>(path_element)) type = StructureToken::unknown;
+        else if (std::holds_alternative<detail::StructureParsingFlag>(path_element)) type = StructureToken::unknown;
         else assert(false); // TODO: replace with exception
 
         if (*cur == nullptr) {
@@ -41,7 +41,7 @@ void JsonParser::ParserUnit::add_callback_listener(std::unique_ptr<BasicParserCa
             delete temp;
         }
 
-        static auto jump = []<typename T>(NestingVertex<T>* const vertex, const T& name) -> Vertex** {
+        static auto jump = []<typename T>(detail::NestingVertex<T>* const vertex, const T& name) -> detail::Vertex** {
             return &vertex->to_go[name];
         };
 
@@ -66,7 +66,7 @@ void JsonParser::ParserUnit::add_callback_listener(std::unique_ptr<BasicParserCa
     *cur = create_vertex(StructureToken::callback, std::move(callback));
 }
 
-void JsonParser::ParserUnit::scan() {
+void ParserUnit::scan() {
     static auto token_to_structure = [](Token tk) -> StructureToken {
         switch (tk) {
             case Token::begin_array: [[fallthrough]];
@@ -90,7 +90,7 @@ void JsonParser::ParserUnit::scan() {
         bool start_nesting = false;
         if (to_ignore) {
             tk = parent.expect_token(TokenPattern::value);
-            if (check_pattern(tk, TokenPattern::begin)) {
+            if (JsonParser::check_pattern(tk, TokenPattern::begin)) {
                 structure_stack.push_back(token_to_structure(tk));
                 ignore_depth++;
                 start_nesting = true;
@@ -127,7 +127,7 @@ void JsonParser::ParserUnit::scan() {
 
         if (!start_nesting) {
             while (!vertex_stack.empty()) {
-                tk = parent.expect_token(std::to_underlying(TokenPattern::end) | std::to_underlying(Token::element_delimiter));
+                tk = parent.expect_token(TokenPattern::end | Token::element_delimiter);
                 if (tk == Token::element_delimiter) break;
                 else {
                     assert(structure_stack.back() == token_to_structure(tk)); // TODO: replace with exception
@@ -144,7 +144,7 @@ void JsonParser::ParserUnit::scan() {
             if (vertex_stack.empty()) break;
         }
 
-        static auto jump = []<typename T>(NestingVertex<T>* const ver, const T& name) -> Vertex*& {
+        static auto jump = []<typename T>(detail::NestingVertex<T>* const ver, const T& name) -> detail::Vertex*& {
             if (ver->to_go.find(name) == ver->to_go.end()) return ver->go_for_each;
             else return ver->to_go[name];
         };
@@ -154,7 +154,7 @@ void JsonParser::ParserUnit::scan() {
                 auto ver = dynamic_cast<ArrayVertex*>(vertex_stack.back());
                 auto& index = ver->last;
 
-                Vertex* result = jump(ver, index);
+                detail::Vertex* result = jump(ver, index);
                 if (result == nullptr) to_ignore = true;
                 else {
                     ver->last = index;
@@ -168,7 +168,7 @@ void JsonParser::ParserUnit::scan() {
                 auto name = parent.lexer.get_string();
                 parent.expect_token(Token::name_delimiter);
 
-                Vertex* result = jump(ver, name);
+                detail::Vertex* result = jump(ver, name);
                 if (result == nullptr) to_ignore = true;
                 else {
                     ver->last = name;
@@ -181,35 +181,35 @@ void JsonParser::ParserUnit::scan() {
     }
 }
 
-JsonParser::ParserUnit::ParserUnit(JsonParser& parent) : parent(parent) {
+ParserUnit::ParserUnit(JsonParser& parent) : parent(parent) {
     auto root = new ObjectVertex(StructureToken::object, nullptr, {}, "");
     vertex_stack.push_back(root);
 }
 
-JsonParser::Token JsonParser::scan_token(bool memorise) {
+detail::Token JsonParser::scan_token(bool memorise) {
     return lexer.scan_token(memorise);
 }
 
-JsonParser::Token JsonParser::expect_token(Token tk, bool memorise) {
+detail::Token JsonParser::expect_token(detail::Token tk, bool memorise) {
     auto res = lexer.scan_token(memorise);
     if (tk == res) return res;
     else assert(false); // TODO: replace with exception
 }
 
-JsonParser::Token JsonParser::expect_token(uint16_t tk, bool memorise) {
+detail::Token JsonParser::expect_token(uint16_t tk, bool memorise) {
     auto res = lexer.scan_token(memorise);
-    if (tk & std::to_underlying(res)) return res;
+    if (tk & res) return res;
     else assert(false); // TODO: replace with exception
 }
 
-JsonParser::Token JsonParser::expect_token(TokenPattern tk_pat, bool memorise) {
+detail::Token JsonParser::expect_token(detail::TokenPattern tk_pat, bool memorise) {
     auto res = lexer.scan_token(memorise);
     if (check_pattern(res, tk_pat)) return res;
     else assert(false); // TODO: replace with exception
 }
 
-bool JsonParser::check_pattern(JsonParser::Token tk, JsonParser::TokenPattern pat) {
-    return std::to_underlying(pat) & std::to_underlying(tk);
+bool JsonParser::check_pattern(detail::Token tk, detail::TokenPattern pat) {
+    return pat & tk;
 }
 
 JsonParser::JsonParser(IStreamWrapper&& is) : lexer(std::move(is)) {
@@ -217,13 +217,13 @@ JsonParser::JsonParser(IStreamWrapper&& is) : lexer(std::move(is)) {
     units.push_back(base);
 }
 
-JsonParser::ParserUnit *const JsonParser::base_parser_unit() {
+ParserUnit *const JsonParser::base_parser_unit() {
     return units[0];
 }
 
-JsonParser::ParserUnit::Vertex::Vertex(JsonParser::StructureToken type, JsonParser::ParserUnit::Vertex *go_for_each)
+detail::Vertex::Vertex(StructureToken type, detail::Vertex *go_for_each)
                                       : type(type), go_for_each(go_for_each) {}
 
-JsonParser::ParserUnit::CallbackVertex::CallbackVertex(JsonParser::StructureToken type, JsonParser::ParserUnit::Vertex *go_for_each,
+ParserUnit::CallbackVertex::CallbackVertex(StructureToken type, detail::Vertex *go_for_each,
                                                        std::unique_ptr<BasicParserCallback> callback)
                                                        : Vertex(type, go_for_each), callback(std::move(callback)) {}
